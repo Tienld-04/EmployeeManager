@@ -14,26 +14,26 @@ import java.util.Set;
 
 @Service
 public class UserService {
-    
+
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private RoleRepository roleRepository;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     public User registerUser(String username, String password, String email) {
         // Kiểm tra username và email đã tồn tại chưa
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Username đã tồn tại!");
         }
-        
+
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email đã tồn tại!");
         }
-        
+
         // Tạo user mới
         User user = new User();
         user.setUsername(username);
@@ -42,7 +42,7 @@ public class UserService {
         user.setFirstName(""); // Để trống
         user.setLastName("");  // Để trống
         user.setEnabled(true);
-        
+
         // Gán role mặc định là USER
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByName("ROLE_USER")
@@ -52,22 +52,22 @@ public class UserService {
                 });
         roles.add(userRole);
         user.setRoles(roles);
-        
+
         return userRepository.save(user);
     }
-    
+
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
-    
+
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-    
+
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
-    
+
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }

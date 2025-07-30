@@ -14,40 +14,40 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController {
-    
+
     @Autowired
     private UserService userService;
-    
+
     @GetMapping("/")
     public String home() {
         return "redirect:/login";
     }
-    
+
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
-                           @RequestParam(value = "logout", required = false) String logout,
-                           Model model) {
+                            @RequestParam(value = "logout", required = false) String logout,
+                            Model model) {
         if (error != null) {
             model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");
         }
-        
+
         if (logout != null) {
             model.addAttribute("message", "Bạn đã đăng xuất thành công!");
         }
-        
+
         return "login";
     }
-    
+
     @GetMapping("/register")
     public String registerPage() {
         return "register";
     }
-    
+
     @PostMapping("/register")
     public String registerUser(@RequestParam String username,
-                              @RequestParam String password,
-                              @RequestParam String email,
-                              RedirectAttributes redirectAttributes) {
+                               @RequestParam String password,
+                               @RequestParam String email,
+                               RedirectAttributes redirectAttributes) {
         try {
             User user = userService.registerUser(username, password, email);
             redirectAttributes.addFlashAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
@@ -57,7 +57,7 @@ public class AuthController {
             return "redirect:/register";
         }
     }
-    
+
     @GetMapping("/home")
     public String homePage() {
         return "home";
