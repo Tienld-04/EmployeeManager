@@ -9,49 +9,80 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/employees")
+@Controller
+@RequestMapping("/employees")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-//    @GetMapping
-//    public String employeeList(Model model){
-//        List<Employee> employees = employeeService.getListEmployee();
-//        model.addAttribute("employeeList", employees);
-//        System.out.println(model.getAttribute("employeeList"));
-//        System.out.println(model.asMap());
-//        return "Hello";
-//    }
-
+    // Web interface endpoints
     @GetMapping
-    public List<Employee> getAllEmployee(){
+    public String employeeList(Model model) {
+        List<Employee> employees = employeeService.getListEmployee();
+        model.addAttribute("employeeList", employees);
+        return "employees/list";
+    }
+
+    @GetMapping("/add")
+    public String addEmployeeForm(Model model) {
+        model.addAttribute("employee", new Employee());
+        return "employees/add";
+    }
+
+    @PostMapping("/add")
+    public String addEmployee(@ModelAttribute Employee employee) {
+        employeeService.saveEmployee(employee);
+        return "redirect:/employees";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editEmployeeForm(@PathVariable Long id, Model model) {
+        Employee employee = employeeService.getEmployeeByID(id);
+        model.addAttribute("employee", employee);
+        return "employees/edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editEmployee(@PathVariable Long id, @ModelAttribute Employee employee) {
+        employeeService.updateEmployee(id, employee);
+        return "redirect:/employees";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
+        return "redirect:/employees";
+    }
+
+    // REST API endpoints
+    @GetMapping("/api")
+    @ResponseBody
+    public List<Employee> getAllEmployee() {
         return employeeService.getListEmployee();
-
     }
 
-    @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable Long id){
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    public Employee getEmployeeById(@PathVariable Long id) {
         return employeeService.getEmployeeByID(id);
-
     }
 
-    @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee){
+    @PostMapping("/api")
+    @ResponseBody
+    public Employee createEmployee(@RequestBody Employee employee) {
         return employeeService.saveEmployee(employee);
     }
 
-
-    @PutMapping("/{id}")
-    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee){
+    @PutMapping("/api/{id}")
+    @ResponseBody
+    public Employee updateEmployeeApi(@PathVariable Long id, @RequestBody Employee employee) {
         return employeeService.updateEmployee(id, employee);
-
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteEmployee(@PathVariable Long id){
+    @DeleteMapping("/api/{id}")
+    @ResponseBody
+    public void deleteEmployeeApi(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
     }
-    
 }
